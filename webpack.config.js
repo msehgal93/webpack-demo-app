@@ -5,17 +5,18 @@ npm install --save-dev css-loader style-loader
 npm install webpack-dev-server -g
 npm install path
 */
- var path = require('path');
-
+var path = require('path');
+var webpack = require('webpack');
+var commonsPlugin = new webpack.optimize.CommonsChunkPlugin('common');
 
 module.exports = {
   entry: {
-    MAIN: './modules/main.js',
-    ABOUT: './modules/about.js'
+    'main.bundle': './modules/main.js',
+    'about.bundle': './modules/about.js'
   },
   output: {
     path: path.resolve(__dirname, 'build'),
-    filename: '[name].bundle.js' // Template based on keys in entry above
+    filename: '[name].js' // Template based on keys in entry above
   },
   module: {
     loaders: [
@@ -27,6 +28,6 @@ module.exports = {
       },
       { test: /\.css$/, exclude: /node_modules/, loader: 'style-loader!css-loader' }
     ]
-  }
-  // ,watch: true
+  },
+  plugins: [commonsPlugin]
 };

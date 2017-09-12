@@ -41,7 +41,7 @@ Switch to the directory containing `webpack.config.js` and run:
 
 ## Multiple Entrypoints
 ```js
- var path = require('path');
+var path = require('path');
 
 module.exports = {
   entry: {
@@ -63,6 +63,38 @@ module.exports = {
       { test: /\.css$/, exclude: /node_modules/, loader: 'style-loader!css-loader' }
     ]
   }
-  // ,watch: true
 };
 ```
+
+## bundling common resources
+
+About and Index have jQuery in common. Weebpack understands this and we can build a common file to put the common code in it. Whatever the common resources are, webpack finds it and puts all of it in a mentioned file.
+
+```js
+var path = require('path');
+var webpack = require('webpack');
+var commonsPlugin = new webpack.optimize.CommonsChunkPlugin('common.js');
+
+module.exports = {
+  entry: {
+    'main.bundle.js': './modules/main.js',
+    'about.bundle.js': './modules/about.js'
+  },
+  output: {
+    path: path.resolve(__dirname, 'build'),
+  },
+  module: {
+    loaders: [
+      {
+        test: /\.js$/,
+        loader: 'babel-loader',
+        exclude: /node_modules/,
+        query: {presets: ['es2015']}
+      },
+      { test: /\.css$/, exclude: /node_modules/, loader: 'style-loader!css-loader' }
+    ]
+  },
+  plugins: [commonsPlugin]
+};
+```
+add a file common.js in both about and index page before any other resource
