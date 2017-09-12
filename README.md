@@ -38,3 +38,31 @@ Switch to the directory containing `webpack.config.js` and run:
 
 `npm install --save-dev css-loader style-loader`
 -> to process css files we need both "css-loader" and "style-loader" [see the corresponding configuration in webpack.config.js]
+
+## Multiple Entrypoints
+```js
+ var path = require('path');
+
+module.exports = {
+  entry: {
+    MAIN: './modules/main.js',
+    ABOUT: './modules/about.js'
+  },
+  output: {
+    path: path.resolve(__dirname, 'build'),
+    filename: '[name].bundle.js' // Template based on keys in entry above
+  },
+  module: {
+    loaders: [
+      {
+        test: /\.js$/,
+        loader: 'babel-loader',
+        exclude: /node_modules/,
+        query: {presets: ['es2015']}
+      },
+      { test: /\.css$/, exclude: /node_modules/, loader: 'style-loader!css-loader' }
+    ]
+  }
+  // ,watch: true
+};
+```
