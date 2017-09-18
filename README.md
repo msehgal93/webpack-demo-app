@@ -1,4 +1,4 @@
-## webpack-demo
+# webpack-demo
 This is a cookbook of how to get things done with webpack along with a working demo app to understand webpack.
 
 Primer - https://scotch.io/tutorials/getting-started-with-webpack-module-bundling-magic
@@ -38,6 +38,8 @@ Switch to the directory containing `webpack.config.js` and run:
 
 `npm install --save-dev css-loader style-loader`
 -> to process css files we need both "css-loader" and "style-loader" [see the corresponding configuration in webpack.config.js]
+
+how to use other resources viz. img, font, text, data, [see](https://webpack.js.org/guides/asset-management/)
 
 ## Multiple Entrypoints
 ```js
@@ -98,3 +100,50 @@ module.exports = {
 };
 ```
 add a file common.js in both about and index page before any other resource
+
+
+## Tree Shaking
+It is basically a term which refers to the process of elimination dead-code.
+
+```js
+npm i uglifyjs-webpack-plugin --save-dev
+```
+
+```js
++ const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+
+module.exports = {
+  entry: './src/index.js',
+  output: {
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist')
+  },
+  plugins: [
++    new UglifyJSPlugin()
+  ]
+}
+```
+
+But, there's always a but. There is a caviar to it,
+
+TL;DR - add `{ modules: false }` to the preset list, and without it, webpack won't tree shake
+
+The package `babel-preset-es2015` contains another package named `babel-plugin-transform-es2015-modules-commonjs` that turns all of our ES6 modules into CommonJS modules. This isn't ideal, and here's why.
+
+Javascript bundlers such as webpack and Rollup can only perform tree-shaking on modules that have a static structure. If a module is static, then the bundler can determine its structure at build time, safely removing code that isn't being imported anywhere.
+
+CommonJS modules do not have a static structure. Because of this, webpack won’t be able to tree-shake unused code from the final bundle. Luckily, Babel has alleviated this issue by providing developers with an option that we can pass to our presets array along with `babel-preset-es2015`
+
+```js
+options: {
+  presets: [
+    [ 'es2015', { modules: false } ]
+  ]
+}
+```
+
+According to Babel's documentation:
+
+>"modules - Enable transformation of ES6 module syntax to another module type (Enabled by default to `commonjs`). Can be false to not transform modules, or one of ["amd", "umd", "systemjs", "commonjs"]".
+
+Slide that extra bit of code into your configuration and you'll be cooking with peanut oil. [Source](http://jakewiesler.com/tree-shaking-es6-modules-in-webpack-2/)

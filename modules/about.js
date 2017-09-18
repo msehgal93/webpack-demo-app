@@ -1,8 +1,11 @@
 require('./about.css');
 
-var $ = require('./../vendor/js/jquery.min.js');
+// ONLY this function gets exported in main
+export function forMain(argument) {
+  return 'for main';
+}
 
-
-const name = 'About';
-
-setTimeout(() => {$('body').append(`<p>Welcome to ${name} Page.</p>`)}, 1000);
+// this function isn't exported
+export function not_forMain(argument) {
+  return 'not for main';
+}
